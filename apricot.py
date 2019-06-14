@@ -29,7 +29,15 @@ def parse_input(text):
             result.append(inc)
             continue
 
+        #error_at(text, ii, "can not tokenize")
+
     return result
+
+
+def error_at(user_input, loc, msg):
+    print(user_input)
+    print(" " * loc + "^ " + msg)
+    sys.exit(1)
 
 
 if __name__ == '__main__':
@@ -42,32 +50,38 @@ if __name__ == '__main__':
 
     user_input = argv[1]
 
-    user_input = parse_input(user_input)
+    tokens = parse_input(user_input)
 
     print(".intel_syntax noprefix")
     print(".global main")
     print("main:")
-    print("  mov rax, %d" %  int(user_input[0]))
+    print("  mov rax, %d" %  int(tokens[0]))
 
     ii = 1
     while True:
 
-        if ii == len(user_input):
+        if ii == len(tokens):
             break
 
-        if user_input[ii] == '+':
+        if tokens[ii] == '+':
             ii = ii + 1
-            print("  add rax, %d" % int(user_input[ii]))
+
+            if not tokens[ii].isdigit():
+                error_at(user_input, ii, "Not a number.")
+            print("  add rax, %d" % int(tokens[ii]))
             ii = ii + 1
             continue
         
-        if user_input[ii] == '-':
+        if tokens[ii] == '-':
             ii = ii + 1
-            print("  sub rax, %d" % int(user_input[ii]))
+
+            if not tokens[ii].isdigit():
+                error_at(user_input, ii, "Not a number.")
+            print("  sub rax, %d" % int(tokens[ii]))
             ii = ii + 1
             continue
 
-        print("unexpected character: '%c'" % user_input[ii])
+        print("unexpected character: '%c'" % tokens[ii])
         sys.exit(1)
 
     print("  ret")
